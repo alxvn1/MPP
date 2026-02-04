@@ -1,0 +1,20 @@
+## Игнорируем результаты сборки
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+## Игнорируем настройки Rider и Visual Studio
+.idea/
+.vs/
+*.user
+*.userosscache
+*.sln.iml
+
+## Игнорируем кэш NuGet
+packages/
+*.nupkg
+
+## Прочие временные файлы
+*.log
+.DS_Store
