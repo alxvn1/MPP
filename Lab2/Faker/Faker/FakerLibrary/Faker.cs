@@ -18,8 +18,13 @@ namespace FakerLibrary
             _config = config;
             _generators = new List<IValueGenerator>
             {
-                new IntGenerator(), new LongGenerator(), new DoubleGenerator(),
-                new StringGenerator(), new DateTimeGenerator(), new CollectionGenerator()
+                new IntGenerator(),
+                new LongGenerator(),
+                new FloatGenerator(),   
+                new DoubleGenerator(),
+                new StringGenerator(),
+                new DateTimeGenerator(),
+                new CollectionGenerator()
             };
         }
 

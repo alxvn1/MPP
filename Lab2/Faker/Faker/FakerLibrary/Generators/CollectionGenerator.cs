@@ -7,11 +7,21 @@ namespace FakerLibrary.Generators
     public class CollectionGenerator : IValueGenerator
     {
         public bool CanGenerate(Type type) =>
-            type.IsArray || (type.IsGenericType && typeof(IEnumerable).IsAssignableFrom(type));
+            type.IsArray
+            || (type.IsGenericType &&
+                (
+                    type.GetGenericTypeDefinition() == typeof(List<>)
+                    || type.GetGenericTypeDefinition() == typeof(IEnumerable<>)
+                    || type.GetGenericTypeDefinition() == typeof(ICollection<>)
+                    || type.GetGenericTypeDefinition() == typeof(IList<>)
+                ));
 
         public object Generate(Type type, GeneratorContext ctx)
         {
-            Type elementType = type.IsArray ? type.GetElementType() : type.GetGenericArguments()[0];
+            Type elementType = type.IsArray
+                ? type.GetElementType()
+                : type.GetGenericArguments()[0];
+
             int size = ctx.Random.Next(3, 7);
 
             var listType = typeof(List<>).MakeGenericType(elementType);
@@ -28,9 +38,7 @@ namespace FakerLibrary.Generators
                 list.CopyTo(array, 0);
                 return array;
             }
-
             return list;
         }
-        
     }
 }

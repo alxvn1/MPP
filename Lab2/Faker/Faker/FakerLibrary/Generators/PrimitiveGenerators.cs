@@ -28,4 +28,12 @@ namespace FakerLibrary.Generators
         public object Generate(Type type, GeneratorContext ctx) => 
             DateTime.Now.AddDays(ctx.Random.Next(-10000, 10000));
     }
+    
+    public class FloatGenerator : IValueGenerator
+    {
+        public bool CanGenerate(Type type) => type == typeof(float);
+
+        public object Generate(Type type, GeneratorContext ctx)
+            => (float)(ctx.Random.NextDouble() * 100.0f);
+    }
 }
