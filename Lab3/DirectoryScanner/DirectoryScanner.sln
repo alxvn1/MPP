@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryScanner", "DirectoryScanner\DirectoryScanner.csproj", "{682588E0-89C9-4469-8ED2-F80DB65DF44B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryScanner.WPF", "DirectoryScanner.WPF\DirectoryScanner.WPF.csproj", "{30C940F4-520D-4877-8636-E0EBD98BA915}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryScanner.Test", "DirectoryScanner.Test\DirectoryScanner.Test.csproj", "{AA155A06-C51A-4DE0-944E-4FEF2371C4FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{682588E0-89C9-4469-8ED2-F80DB65DF44B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{682588E0-89C9-4469-8ED2-F80DB65DF44B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{682588E0-89C9-4469-8ED2-F80DB65DF44B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{682588E0-89C9-4469-8ED2-F80DB65DF44B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30C940F4-520D-4877-8636-E0EBD98BA915}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30C940F4-520D-4877-8636-E0EBD98BA915}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30C940F4-520D-4877-8636-E0EBD98BA915}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30C940F4-520D-4877-8636-E0EBD98BA915}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AA155A06-C51A-4DE0-944E-4FEF2371C4FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AA155A06-C51A-4DE0-944E-4FEF2371C4FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AA155A06-C51A-4DE0-944E-4FEF2371C4FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AA155A06-C51A-4DE0-944E-4FEF2371C4FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
