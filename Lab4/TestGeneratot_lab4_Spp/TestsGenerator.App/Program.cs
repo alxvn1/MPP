@@ -6,7 +6,7 @@ string inputFolder = Console.ReadLine()!;
 if (string.IsNullOrWhiteSpace(inputFolder) || !Directory.Exists(inputFolder))
 {
     Console.WriteLine("Error: input folder doesn't exist.");
-    PauseAndExit();// Вызываем лок метод для паузы, чтоб консоль не закрылась сразу
+    PauseAndExit();
     return;
 }
 
@@ -20,11 +20,6 @@ if (string.IsNullOrWhiteSpace(outputFolder))
     return;
 }
 
-if (!Directory.Exists(outputFolder))
-{
-    Directory.CreateDirectory(outputFolder);
-}
-
 var inputFiles = Directory.GetFiles(inputFolder, "*.cs", SearchOption.AllDirectories);
 if (inputFiles.Length == 0)
 {
@@ -35,7 +30,10 @@ if (inputFiles.Length == 0)
 
 Console.WriteLine($"{inputFiles.Length} files were found! Start generating tests...");
 
-var generator = new TestGenerator();
+var generator = new TestGenerator(maxRead: 2, maxGen: 4, maxWrite: 2);
+// maxRead: 2 — одновр читаем 2 файла
+// maxGen: 4 — одновр обрабатываем 4 задачи генерации
+// maxWrite: 2 — одновр записываем 2 файла
 await generator.GenerateTestsAsync(inputFiles, outputFolder);
 
 Console.WriteLine("Test generation completed.");
