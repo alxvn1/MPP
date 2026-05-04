@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -17,24 +22,45 @@ public class TestGenerator
     }
 
     public TestGenerator() : this(Environment.ProcessorCount, Environment.ProcessorCount, Environment.ProcessorCount) { }
-    //вызов основн конструктор, передавая кол-во ядер процессора
+
     public async Task GenerateTestsAsync(IEnumerable<string> inputFiles, string outputFolder)
     {
         Directory.CreateDirectory(outputFolder);
-
+        
         var readBlock = new TransformBlock<string, string>(async path => 
-            await File.ReadAllTextAsync(path), 
-            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxRead });
+        {
+            try {
+                return await File.ReadAllTextAsync(path);
+            } catch (Exception ex) {
+                Console.WriteLine($"[Error] Ошибка чтения {path}: {ex.Message}");
+                return null!; // Игнорируем файл
+            }
+        }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxRead });
 
+        
         var generateBlock = new TransformManyBlock<string, TestFile>(sourceCode => 
-            GenerateTestFilesLogic(sourceCode), 
-            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxGen });
+        {
+            if (string.IsNullOrWhiteSpace(sourceCode)) return Enumerable.Empty<TestFile>();
+            
+            try {
+                return GenerateTestFilesLogic(sourceCode);
+            } catch (Exception ex) {
+                Console.WriteLine($"[Error] Ошибка парсинга Roslyn: {ex.Message}");
+                return Enumerable.Empty<TestFile>();
+            }
+        }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxGen });
 
+        
         var writeBlock = new ActionBlock<TestFile>(async file => 
-            await File.WriteAllTextAsync(Path.Combine(outputFolder, file.FileName), file.Content), 
-            new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxWrite });
+        {
+            try {
+                await File.WriteAllTextAsync(Path.Combine(outputFolder, file.FileName), file.Content);
+            } catch (Exception ex) {
+                Console.WriteLine($"[Error] Не удалось записать файл {file.FileName}: {ex.Message}");
+            }
+        }, new ExecutionDataflowBlockOptions { MaxDegreeOfParallelism = _maxWrite });
 
-        var linkOptions = new DataflowLinkOptions { PropagateCompletion = true };
+        var linkOptions = new DataflowLinkOptions { PropagateCompletion = true }; //
         readBlock.LinkTo(generateBlock, linkOptions);
         generateBlock.LinkTo(writeBlock, linkOptions);
 
@@ -47,6 +73,7 @@ public class TestGenerator
     private IEnumerable<TestFile> GenerateTestFilesLogic(string sourceCode)
     {
         var root = CSharpSyntaxTree.ParseText(sourceCode).GetRoot();
+        //ищем классы по аст. ост только паблик 
         var classes = root.DescendantNodes().OfType<ClassDeclarationSyntax>()
             .Where(c => c.Modifiers.Any(m => m.IsKind(SyntaxKind.PublicKeyword)));
 
@@ -63,20 +90,64 @@ public class TestGenerator
     private string GenerateSingleTestClass(ClassDeclarationSyntax cls)
     {
         string className = cls.Identifier.Text;
+        
+        // Достаем публичные методы тестируемого класса
         var methods = cls.Members.OfType<MethodDeclarationSyntax>()
             .Where(m => m.Modifiers.Any(mod => mod.IsKind(SyntaxKind.PublicKeyword)))
             .ToList();
 
+        // ген-я моков фейковых реал интерфейсов 
+        var mockFields = new List<string>();
+        var mockInitializations = new List<string>();
+        var constructorArgs = new List<string>();
+
+        // Ищем конструктор с наибольшим числом параметров
+        var ctor = cls.Members.OfType<ConstructorDeclarationSyntax>()
+            .OrderByDescending(c => c.ParameterList.Parameters.Count)
+            .FirstOrDefault();
+
+        if (ctor != null)
+        {
+            foreach (var param in ctor.ParameterList.Parameters)
+            {
+                string paramType = param.Type.ToString();
+                string paramName = param.Identifier.Text;
+                
+                // инт если начинается на I и след буква большая
+                bool isInterface = paramType.Length > 1 && paramType[0] == 'I' && char.IsUpper(paramType[1]);
+
+                if (isInterface)
+                {
+                    // "logger" превращается в "Logger" + потом в "_mockLogger"
+                    string capitalizeParam = char.ToUpper(paramName[0]) + paramName.Substring(1);
+                    string mockName = $"_mock{capitalizeParam}";
+                    
+                    mockFields.Add($"        private Mock<{paramType}> {mockName};");
+                    mockInitializations.Add($"            {mockName} = new Mock<{paramType}>();");
+                    constructorArgs.Add($"{mockName}.Object"); // Передаем Mock object
+                }
+                else
+                {
+                    // Обычные типы вроде int, string передаем как default
+                    constructorArgs.Add($"default({paramType})");
+                }
+            }
+        }
+
+        // ======= ПЕРЕГРУЖЕННЫЕ МЕТОДЫ =======
         var methodCounts = new Dictionary<string, int>();
         var testMethods = new List<string>();
 
         foreach (var method in methods)
         {
             string name = method.Identifier.Text;
+            
             if (!methodCounts.ContainsKey(name)) methodCounts[name] = 1;
             else methodCounts[name]++;
 
+            // Проверяем наличие перегрузок (больше 1 метода с таким именем)
             bool isOverloaded = methods.Count(m => m.Identifier.Text == name) > 1;
+            // Если перегружен - добавляем номер
             string testName = isOverloaded ? $"{name}{methodCounts[name]}Test" : $"{name}Test";
 
             var arrange = method.ParameterList.Parameters.Select(p => 
@@ -107,6 +178,11 @@ public class TestGenerator
         }}");
         }
 
+
+        string testClassInstantiate = constructorArgs.Count > 0 
+            ? $"_testClass = new {className}({string.Join(", ", constructorArgs)});" 
+            : $"_testClass = new {className}();";
+
         return $@"using System;
 using Xunit;
 using Moq;
@@ -116,10 +192,12 @@ namespace GeneratedTests
     public class {className}Tests
     {{
         private {className} _testClass;
+{string.Join("\n", mockFields)}
 
         public {className}Tests()
         {{
-            _testClass = new {className}(); 
+{string.Join("\n", mockInitializations)}
+            {testClassInstantiate}
         }}
 {string.Join("\n", testMethods)}
     }}

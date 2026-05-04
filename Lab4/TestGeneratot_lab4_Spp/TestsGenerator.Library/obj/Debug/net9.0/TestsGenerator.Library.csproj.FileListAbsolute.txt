@@ -1,0 +1,12 @@
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\bin\Debug\net9.0\TestsGenerator.Library.deps.json
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\bin\Debug\net9.0\TestsGenerator.Library.dll
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\bin\Debug\net9.0\TestsGenerator.Library.pdb
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.csproj.AssemblyReference.cache
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.GeneratedMSBuildEditorConfig.editorconfig
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.AssemblyInfoInputs.cache
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.AssemblyInfo.cs
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.csproj.CoreCompileInputs.cache
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.dll
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\refint\TestsGenerator.Library.dll
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\TestsGenerator.Library.pdb
+D:\Polina\BSUIR\6SEM\SPP\Lab4\TestGeneratot_lab4_Spp\TestsGenerator.Library\obj\Debug\net9.0\ref\TestsGenerator.Library.dll
